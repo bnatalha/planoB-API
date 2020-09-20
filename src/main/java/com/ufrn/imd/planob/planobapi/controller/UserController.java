@@ -2,7 +2,7 @@ package com.ufrn.imd.planob.planobapi.controller;
 
 import com.ufrn.imd.planob.planobapi.exception.ResourceNotFoundException;
 import com.ufrn.imd.planob.planobapi.model.User;
-import com.ufrn.imd.planob.planobapi.repository.UserRepository;
+import com.ufrn.imd.planob.planobapi.repository.UserRepositoryJPA;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,15 +10,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserRepository repository;
+    private final UserRepositoryJPA repository;
 
-    public UserController(UserRepository repository) {
+    public UserController(UserRepositoryJPA repository) {
         this.repository = repository;
     }
 
     @GetMapping("/{userId}")
     public User getUser(@PathVariable String userId) {
-        return repository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+        User userToReturn = repository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+        userToReturn.setKeyphrase("HIDDEN");
+        return userToReturn;
     }
 
     @PostMapping("/save")
